@@ -32,6 +32,8 @@ public interface ExecutionRepositoryInterface extends SaveRepositoryInterface<Ex
 
     Optional<Execution> findById(String tenantId, String id, boolean allowDeleted);
 
+    Optional<Execution> findByIdWithoutAcl(String tenantId, String id);
+
     ArrayListTotal<Execution> findByFlowId(String tenantId, String namespace, String id, Pageable pageable);
 
     /**

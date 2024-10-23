@@ -145,6 +145,27 @@ public abstract class AbstractJdbcExecutionRepository extends AbstractJdbcReposi
             });
     }
 
+    @Override
+    public Optional<Execution> findByIdWithoutAcl(String tenantId, String id) {
+        return jdbcRepository
+            .getDslContextWrapper()
+            .transactionResult(configuration -> {
+                Select<Record1<Object>> from = DSL
+                    .using(configuration)
+                    .select(field("value"))
+                    .from(this.jdbcRepository.getTable())
+                    .where(this.noAclDefaultFilter(tenantId, false))
+                    .and(field("key").eq(id));
+
+                return this.jdbcRepository.fetchOne(from);
+            });
+    }
+
+    protected Condition noAclDefaultFilter(String tenantId, boolean deleted) {
+        var tenant = buildTenantCondition(tenantId);
+        return deleted ? tenant : tenant.and(field("deleted", Boolean.class).eq(false));
+    }
+
     abstract protected Condition findCondition(String query, Map<String, String> labels);
 
     protected Condition statesFilter(List<State.Type> state) {

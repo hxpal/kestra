@@ -93,13 +93,22 @@ public class ExecutionService {
     @Inject
     private ApplicationEventPublisher<CrudEvent<Execution>> eventPublisher;
 
-    public Execution getExecutionIfPause(final String tenant, final @NotNull String executionId) {
-        Optional<Execution> maybeExecution = executionRepository.findById(tenant, executionId);
-        if (maybeExecution.isEmpty()) {
-            throw new NoSuchElementException("Execution '"+ executionId + "' not found.");
-        }
+    public Execution getExecution(final String tenant,
+                                  final @NotNull String executionId,
+                                  final boolean withACL) {
+        Optional<Execution> maybeExecution = withACL ?
+            executionRepository.findById(tenant, executionId) :
+            executionRepository.findByIdWithoutAcl(tenant, executionId);
 
-        var execution = maybeExecution.get();
+        return maybeExecution
+            .orElseThrow(() -> new NoSuchElementException("Execution '"+ executionId + "' not found."));
+    }
+
+    public Execution getExecutionIfPause(final String tenant,
+                                         final @NotNull String executionId,
+                                         final boolean withACL) {
+        Execution execution = getExecution(tenant, executionId, withACL);
+
         if (!execution.getState().isPaused()) {
             throw new IllegalStateException("Execution '"+ executionId + "' is not paused, can't resume it");
         }
