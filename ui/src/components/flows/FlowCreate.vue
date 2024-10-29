@@ -9,9 +9,6 @@
             :flow-graph="flowGraph"
             :is-read-only="false"
             :is-dirty="true"
-            :total="total"
-            :guided-properties="guidedProperties"
-            :flow-validation="flowValidation"
             :flow="sourceWrapper"
             :next-revision="1"
         />

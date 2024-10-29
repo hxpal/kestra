@@ -120,7 +120,7 @@
             generateMenu() {
                 return [
                     {
-                        href: {name: "home"},
+                        href: {name: "dashboards"},
                         title: this.$t("homeDashboard.title"),
                         icon: {
                             element: shallowRef(ViewDashboardVariantOutline),
